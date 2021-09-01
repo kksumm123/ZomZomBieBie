@@ -1,16 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Actor : MonoBehaviour
 {
-    void Start()
+    protected Animator animator;
+    protected NavMeshAgent agent;
+    protected void Awake()
     {
-        
-    }
-
-    void Update()
-    {
-        
+        animator = GetComponentInChildren<Animator>();
+        agent = GetComponent<NavMeshAgent>();
     }
 }
