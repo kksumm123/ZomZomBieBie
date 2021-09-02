@@ -9,27 +9,63 @@ using UnityEngine;
 public class Player : Actor
 {
     [SerializeField] float speed = 5;
-    float originFieldOfView;
-    Canvas aimCanvas;
-    Canvas normalCanvas;
+
     void Start()
     {
         camTransform = Camera.main.transform;
+        InitCrossHair();
+        InitAnimationClips();
+        State = StateType.Idle;
+    }
+
+
+    #region InitCrossHair
+    float originFieldOfView;
+    Canvas aimCanvas;
+    Canvas normalCanvas;
+    void InitCrossHair()
+    {
         originFieldOfView = Camera.main.fieldOfView;
         aimCanvas = transform.Find("AimCanvas").GetComponent<Canvas>();
         normalCanvas = transform.Find("NormalCanvas").GetComponent<Canvas>();
         aimCanvas.enabled = false;
         normalCanvas.enabled = true;
-        State = StateType.Idle;
     }
+    #endregion InitCrossHair
+    #region InitAnimationClips
+    int hashIdle;
+    int hashWalk;
+    int hashRoll;
+    int hashDash;
+    int hashFire;
+    int hashReload;
+    int hashJump;
+    int hashHit;
+    int hashDie;
+    void InitAnimationClips()
+    {
+        hashIdle = Animator.StringToHash("Idle");
+        hashWalk = Animator.StringToHash("Walk");
+        hashRoll = Animator.StringToHash("Roll");
+        //hashDash = Animator.StringToHash("Dash");
+        hashFire = Animator.StringToHash("Fire");
+        hashReload = Animator.StringToHash("Reload");
+        //hashJump = Animator.StringToHash("Jump");
+        hashHit = Animator.StringToHash("Hit");
+        hashDie = Animator.StringToHash("Die");
+    }
+    #endregion InitAnimationClips
 
     void Update()
     {
         Move();
         Zoom();
-        CamaraRotate();
+        CameraRotate();
+
+        PlayAnimation();
     }
 
+    #region Zoom
     bool isZoomMode = false;
     float zoomValue = 20f;
     float zoomDuration = 0.2f;
@@ -63,7 +99,9 @@ public class Player : Actor
             }
         }
     }
+    #endregion Zoom
 
+    #region Move
     Vector3 move;
     void Move()
     {
@@ -81,10 +119,12 @@ public class Player : Actor
             transform.Translate(move * speed * Time.deltaTime);
         }
     }
+    #endregion Move
 
+    #region CameraRotate
     Transform camTransform;
     [SerializeField] float mouseSensitivity = 1f;
-    void CamaraRotate()
+    void CameraRotate()
     {
         // 카메라와 캐릭터 로테이션을 바꾸자 - 마우스 이동량에 따라
         float mouseMoveX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
@@ -98,7 +138,45 @@ public class Player : Actor
         transform.eulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
         camTransform.rotation = rotation;
     }
+    #endregion CameraRotate
 
+    #region PlayAnimation
+    void PlayAnimation()
+    {
+        switch (State)
+        {
+            case StateType.Idle:
+                animator.Play(hashIdle);
+                break;
+            case StateType.Walk:
+                animator.Play(hashWalk);
+                break;
+            case StateType.Roll:
+                animator.Play(hashRoll);
+                break;
+            case StateType.Dash:
+                animator.Play(hashDash);
+                break;
+            case StateType.Fire:
+                animator.Play(hashFire);
+                break;
+            case StateType.Reload:
+                animator.Play(hashReload);
+                break;
+            case StateType.Jump:
+                animator.Play(hashJump);
+                break;
+            case StateType.Hit:
+                animator.Play(hashHit);
+                break;
+            case StateType.Die:
+                animator.Play(hashDie);
+                break;
+        }
+    }
+    #endregion PlayAnimation
+
+    #region State
     enum StateType
     {
         Idle,
@@ -125,4 +203,5 @@ public class Player : Actor
             m_state = value;
         }
     }
+    #endregion State
 }
