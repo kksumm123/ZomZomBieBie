@@ -19,8 +19,6 @@ public class Player : Actor
         State = StateType.Idle;
     }
 
-
-
     #region InitCrossHair
     float originFieldOfView;
     Canvas aimCanvas;
@@ -62,11 +60,14 @@ public class Player : Actor
     readonly string bulletString = "Bullet/Bullet";
     Transform bulletPoint;
     Light bulletPointLight;
+    Vector3 screenCenter;
     void InitFire()
     {
         bullet = (GameObject)Resources.Load(bulletString);
         bulletPoint = transform.Find("BulletPoint");
         bulletPointLight = bulletPoint.GetComponentInChildren<Light>();
+        screenCenter.x = Camera.main.pixelWidth * 0.5f;
+        screenCenter.y = Camera.main.pixelHeight * 0.5f;
     }
     #endregion InitFire
 
@@ -147,9 +148,11 @@ public class Player : Actor
         {
             if (Time.time > fireableTime)
             {
+                Ray centerRay = Camera.main.ScreenPointToRay(screenCenter);
                 fireableTime = Time.time + fireDelay;
                 State = StateType.Fire;
-                Instantiate(bullet, bulletPoint.position, transform.rotation);
+                var newBullet = Instantiate(bullet, bulletPoint.position, Quaternion.identity);
+                newBullet.transform.forward = centerRay.direction;
                 BulletLightCoHandle = StopAndStartCo(BulletLightCoHandle, BulletLightCo());
             }
         }
