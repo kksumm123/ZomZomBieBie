@@ -188,8 +188,15 @@ public class Player : Actor
         var rotation = camTransform.rotation *
                        Quaternion.AngleAxis(mouseMoveX, worldUp) *
                        Quaternion.AngleAxis(mouseMoveY, Vector3.left);
+
         transform.eulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
-        camTransform.rotation = rotation;
+        var eulerRotation = rotation.eulerAngles;
+        if (eulerRotation.x >= 310)
+            eulerRotation.x = Mathf.Clamp(eulerRotation.x, 320, 360);
+        else if (eulerRotation.x >= 40)
+            eulerRotation.x = Mathf.Clamp(eulerRotation.x, 0, 40);
+
+        camTransform.rotation = Quaternion.Euler(eulerRotation);
     }
     #endregion CameraRotate
 
