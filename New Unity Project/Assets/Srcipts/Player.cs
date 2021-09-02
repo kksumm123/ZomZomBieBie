@@ -20,6 +20,7 @@ public class Player : Actor
         normalCanvas = transform.Find("NormalCanvas").GetComponent<Canvas>();
         aimCanvas.enabled = false;
         normalCanvas.enabled = true;
+        State = StateType.Idle;
     }
 
     void Update()
@@ -96,5 +97,30 @@ public class Player : Actor
                        Quaternion.AngleAxis(mouseMoveY, Vector3.left);
         transform.eulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
         camTransform.rotation = rotation;
+    }
+
+    enum StateType
+    {
+        Idle,
+        Walk,
+        Dash,
+        Attack,
+        Jump,
+        Hit,
+        Die,
+    }
+    StateType m_state;
+
+    private StateType State
+    {
+        get => m_state;
+        set
+        {
+            if (m_state == value)
+                return;
+
+            print($"Player State : {m_state} -> {value}");
+            m_state = value;
+        }
     }
 }
