@@ -138,14 +138,20 @@ public class Player : Actor
     #endregion Move
 
     #region Fire
+    float fireDelay = 0.05f;
+    float fireableTime;
     Coroutine BulletLightCoHandle;
     void Fire()
     {
         if (Input.GetMouseButton(0))
         {
-            State = StateType.Fire;
-            Instantiate(bullet, bulletPoint.position, transform.rotation);
-            BulletLightCoHandle = StopAndStartCo(BulletLightCoHandle, BulletLightCo());
+            if (Time.time > fireableTime)
+            {
+                fireableTime = Time.time + fireDelay;
+                State = StateType.Fire;
+                Instantiate(bullet, bulletPoint.position, transform.rotation);
+                BulletLightCoHandle = StopAndStartCo(BulletLightCoHandle, BulletLightCo());
+            }
         }
     }
     float bulletLightTime = 0.05f;
