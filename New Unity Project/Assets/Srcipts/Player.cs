@@ -10,14 +10,18 @@ using UnityEngine.AI;
 public class Player : Actor
 {
     [SerializeField] float speed = 5;
+    CharacterController controller;
     void Start()
     {
         camTransform = Camera.main.transform;
+        controller = GetComponent<CharacterController>();
         InitCrossHair();
         InitAnimationClips();
         InitFire();
+        InitGravity();
         State = StateType.Idle;
     }
+
 
     #region InitCrossHair
     float originFieldOfView;
@@ -70,10 +74,22 @@ public class Player : Actor
         screenCenter.y = Camera.main.pixelHeight * 0.5f;
     }
     #endregion InitFire
+    #region InitGravity
+    float gravityAcceleration = 9.81f;
+    float gravityVelocity;
+    float s;
+    void InitGravity()
+    {
+        gravityAcceleration = 9.81f;
+        gravityVelocity = 0;
+        s = 0;
+    }
+    #endregion InitGravity
 
     void Update()
     {
         Move();
+        UseGravity();
         Fire();
         Zoom();
         CameraRotate();
@@ -130,14 +146,12 @@ public class Player : Actor
         if (move != Vector3.zero)
         {
             move.Normalize();
+
             relateMove = Vector3.zero;
             relateMove = transform.forward * move.z;
             relateMove += transform.right * move.x;
             relateMove.y = 0;
-
-            var pos = agent.nextPosition;
-            pos += speed * Time.deltaTime * relateMove;
-            agent.nextPosition = pos;
+            controller.Move(speed * Time.deltaTime * relateMove);
 
             State = StateType.Walk;
         }
@@ -145,6 +159,31 @@ public class Player : Actor
             State = StateType.Idle;
     }
     #endregion Move
+
+    #region UseGravity
+    void UseGravity()
+    {
+        if (IsGround() == false)
+            gravityAccelerationMove(); // ∂•ø° æ»¥Íæ“¿∏∏È
+        else
+            InitGravity(); //∂•ø° ¥Íæ“¿∏∏È
+    }
+    float t;
+    void gravityAccelerationMove()
+    {
+        t = Time.deltaTime;
+
+        s = gravityVelocity + (0.5f * gravityAcceleration * Mathf.Pow(t, 2));
+
+        controller.Move(new Vector3(0, -s * t, 0));
+
+        gravityVelocity += gravityAcceleration * t;
+    }
+    bool IsGround()
+    { // true = ∂•ø° ¥Í¿Ω, false = ∂•ø° æ»¥Í¿Ω
+        return controller.isGrounded;
+    }
+    #endregion UseGravity
 
     #region Fire
     float fireDelay = 0.05f;
