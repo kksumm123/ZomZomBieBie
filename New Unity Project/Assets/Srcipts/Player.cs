@@ -103,8 +103,10 @@ public class Player : Actor
     {
         Idle,
         Walk,
+        Roll,
         Dash,
-        Attack,
+        Fire,
+        Reload,
         Jump,
         Hit,
         Die,
