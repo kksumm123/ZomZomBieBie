@@ -5,17 +5,47 @@ using UnityEngine;
 
 public class Player : Actor
 {
-
     [SerializeField] float speed = 5;
+    float originFieldOfView;
+    Canvas aimCanvas;
+    Canvas normalCanvas;
     void Start()
     {
         camTransform = Camera.main.transform;
+        originFieldOfView = Camera.main.fieldOfView;
+        aimCanvas = transform.Find("AimCanvas").GetComponent<Canvas>();
+        normalCanvas = transform.Find("NormalCanvas").GetComponent<Canvas>();
+        aimCanvas.enabled = false;
+        normalCanvas.enabled = true;
     }
 
     void Update()
     {
         Move();
+        Zoom();
         CamaraRotate();
+    }
+
+    bool isZoomMode = false;
+    float zoomValue = 20f;
+    void Zoom()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (isZoomMode == false)
+            {
+                isZoomMode = true;
+                Camera.main.fieldOfView = zoomValue;
+            }
+        }
+        else if (Input.GetMouseButtonUp(1))
+        {
+            if (isZoomMode == true)
+            {
+                isZoomMode = false;
+                Camera.main.fieldOfView = originFieldOfView;
+            }
+        }
     }
 
     Vector3 move;
