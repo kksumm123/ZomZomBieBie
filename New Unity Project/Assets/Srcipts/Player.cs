@@ -15,8 +15,10 @@ public class Player : Actor
         camTransform = Camera.main.transform;
         InitCrossHair();
         InitAnimationClips();
+        InitFire();
         State = StateType.Idle;
     }
+
 
 
     #region InitCrossHair
@@ -55,6 +57,18 @@ public class Player : Actor
         hashDie = Animator.StringToHash("Die");
     }
     #endregion InitAnimationClips
+    #region InitFire
+    GameObject bullet;
+    readonly string bulletString = "Bullet/Bullet";
+    Transform bulletPoint;
+    Light bulletPointLight;
+    void InitFire()
+    {
+        bullet = (GameObject)Resources.Load(bulletString);
+        bulletPoint = transform.Find("BulletPoint");
+        bulletPointLight = bulletPoint.GetComponentInChildren<Light>();
+    }
+    #endregion InitFire
 
     void Update()
     {
@@ -63,7 +77,6 @@ public class Player : Actor
         Zoom();
         CameraRotate();
     }
-
 
     #region Zoom
     bool isZoomMode = false;
@@ -125,12 +138,22 @@ public class Player : Actor
     #endregion Move
 
     #region Fire
+    Coroutine BulletLightCoHandle;
     void Fire()
     {
         if (Input.GetMouseButton(0))
         {
             State = StateType.Fire;
+            Instantiate(bullet, bulletPoint.position, transform.rotation);
+            BulletLightCoHandle = StopAndStartCo(BulletLightCoHandle, BulletLightCo());
         }
+    }
+    float bulletLightTime = 0.05f;
+    IEnumerator BulletLightCo()
+    {
+        bulletPointLight.enabled = true;
+        yield return new WaitForSeconds(bulletLightTime);
+        bulletPointLight.enabled = false;
     }
     #endregion Fire
 
@@ -219,4 +242,17 @@ public class Player : Actor
         }
     }
     #endregion State
+
+    #region Methods
+    void StopCo(Coroutine handle)
+    {
+        if (handle != null)
+            StopCoroutine(handle);
+    }
+    Coroutine StopAndStartCo(Coroutine handle, IEnumerator Fn)
+    {
+        StopCo(handle);
+        return StartCoroutine(Fn);
+    }
+    #endregion Methods
 }
