@@ -5,11 +5,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Player : Actor
 {
     [SerializeField] float speed = 5;
-
     void Start()
     {
         camTransform = Camera.main.transform;
@@ -130,7 +130,16 @@ public class Player : Actor
 
         if (move != Vector3.zero)
         {
-            transform.Translate(move * speed * Time.deltaTime);
+            Vector3 relateMove = Vector3.zero;
+            relateMove = transform.forward * move.z;
+            relateMove += transform.right * move.x;
+            relateMove.y = 0;
+            move = relateMove;
+
+            var pos = agent.nextPosition;
+            pos += speed * Time.deltaTime * move;
+            agent.nextPosition = pos;
+
             State = StateType.Walk;
         }
         else
