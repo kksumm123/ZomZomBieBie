@@ -117,6 +117,7 @@ public class Player : Actor
 
     #region Move
     Vector3 move;
+    Vector3 relateMove;
     void Move()
     {
         move = Vector3.zero;
@@ -126,18 +127,16 @@ public class Player : Actor
         if (Input.GetKey(KeyCode.A)) move.x = -1;
         if (Input.GetKey(KeyCode.D)) move.x = 1;
 
-        move.Normalize();
-
         if (move != Vector3.zero)
         {
-            Vector3 relateMove = Vector3.zero;
+            move.Normalize();
+            relateMove = Vector3.zero;
             relateMove = transform.forward * move.z;
             relateMove += transform.right * move.x;
             relateMove.y = 0;
-            move = relateMove;
 
             var pos = agent.nextPosition;
-            pos += speed * Time.deltaTime * move;
+            pos += speed * Time.deltaTime * relateMove;
             agent.nextPosition = pos;
 
             State = StateType.Walk;
