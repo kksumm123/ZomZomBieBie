@@ -1,3 +1,6 @@
+using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +31,8 @@ public class Player : Actor
 
     bool isZoomMode = false;
     float zoomValue = 20f;
+    float zoomDuration = 0.2f;
+    TweenerCore<float, float, FloatOptions> tween;
     void Zoom()
     {
         if (Input.GetMouseButtonDown(1))
@@ -35,7 +40,12 @@ public class Player : Actor
             if (isZoomMode == false)
             {
                 isZoomMode = true;
-                Camera.main.fieldOfView = zoomValue;
+                aimCanvas.enabled = true;
+                normalCanvas.enabled = false;
+                tween.Kill();
+                tween = DOTween.To(() => originFieldOfView
+                                , x => Camera.main.fieldOfView = x
+                                , zoomValue, zoomDuration).SetLink(gameObject);
             }
         }
         else if (Input.GetMouseButtonUp(1))
@@ -43,7 +53,12 @@ public class Player : Actor
             if (isZoomMode == true)
             {
                 isZoomMode = false;
-                Camera.main.fieldOfView = originFieldOfView;
+                aimCanvas.enabled = false;
+                normalCanvas.enabled = true;
+                tween.Kill();
+                tween = DOTween.To(() => zoomValue
+                                , x => Camera.main.fieldOfView = x
+                                , originFieldOfView, zoomDuration).SetLink(gameObject);
             }
         }
     }
