@@ -59,11 +59,11 @@ public class Player : Actor
     void Update()
     {
         Move();
+        Fire();
         Zoom();
         CameraRotate();
-
-        PlayAnimation();
     }
+
 
     #region Zoom
     bool isZoomMode = false;
@@ -117,9 +117,22 @@ public class Player : Actor
         if (move != Vector3.zero)
         {
             transform.Translate(move * speed * Time.deltaTime);
+            State = StateType.Walk;
         }
+        else
+            State = StateType.Idle;
     }
     #endregion Move
+
+    #region Fire
+    void Fire()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            State = StateType.Fire;
+        }
+    }
+    #endregion Fire
 
     #region CameraRotate
     Transform camTransform;
@@ -201,6 +214,8 @@ public class Player : Actor
 
             print($"Player State : {m_state} -> {value}");
             m_state = value;
+
+            PlayAnimation();
         }
     }
     #endregion State
