@@ -163,10 +163,16 @@ public class Player : Actor
     #region UseGravity
     void UseGravity()
     {
-        if (IsGround() == false)
-            gravityAccelerationMove(); // ¶¥¿¡ ¾È´ê¾ÒÀ¸¸é
-        else
+        if (IsGround() == true)
+        {
+            print("¶¥");
             InitGravity(); //¶¥¿¡ ´ê¾ÒÀ¸¸é
+        }
+        else
+        {
+            print("°øÁß");
+            gravityAccelerationMove(); // ¶¥¿¡ ¾È´ê¾ÒÀ¸¸é
+        }
     }
     float t;
     void gravityAccelerationMove()
